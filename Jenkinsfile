@@ -36,22 +36,29 @@ pipeline {
         }
 
         stage('Docker Build & Push') {
-            when {
-                branch 'dev'
-            }
-            steps {
-                withCredentials([
-                    string(credentialsId: 'aws-access-key', variable: 'AWS_ACCESS_KEY_ID'),
-                    string(credentialsId: 'aws-secret-key', variable: 'AWS_SECRET_ACCESS_KEY')
-                ]) {
-                    dockerBuildPush(
-                        image: "${REGISTRY}/${REPO}",
-                        tag: TAG,
-                        region: REGION,
-                        registry: REGISTRY
-                    )
-                }
-            }
+    when {
+        branch 'dev'
+    }
+    agent {
+        docker {
+            image 'docker:27.0.3-cli'
+            args '-v /var/run/docker.sock:/var/run/docker.sock'
         }
     }
+    steps {
+        withCredentials([
+            string(credentialsId: 'aws-access-key', variable: 'AWS_ACCESS_KEY_ID'),
+            string(credentialsId: 'aws-secret-key', variable: 'AWS_SECRET_ACCESS_KEY')
+        ]) {
+            sh '''
+              aws ecr get-login-password --region ap-south-1 \
+              | docker login --username AWS --password-stdin 123456789012.dkr.ecr.ap-south-1.amazonaws.com
+
+              docker build -t 123456789012.dkr.ecr.ap-south-1.amazonaws.com/reporting-backend:${TAG} .
+              docker push 123456789012.dkr.ecr.ap-south-1.amazonaws.com/reporting-backend:${TAG}
+            '''
+        }
+     }
+   }
+ }
 }
