@@ -11,7 +11,7 @@ pipeline {
     }
 
     tools {
-        jdk 'JDK_22'
+        jdk 'JDK_21'
         maven 'Maven_3'
     }
 
