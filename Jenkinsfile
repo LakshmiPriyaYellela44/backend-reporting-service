@@ -41,20 +41,14 @@ pipeline {
                 branch 'dev'
             }
 
-            agent {
-                docker {
-                    image 'docker:27.0.3-cli'
-                    args '-v /var/run/docker.sock:/var/run/docker.sock'
-                }
-            }
-
             steps {
                 withCredentials([
                     string(credentialsId: 'aws-access-key', variable: 'AWS_ACCESS_KEY_ID'),
                     string(credentialsId: 'aws-secret-key', variable: 'AWS_SECRET_ACCESS_KEY')
                 ]) {
                     sh '''
-                      apk add --no-cache aws-cli
+                      docker --version
+                      aws --version
 
                       aws ecr get-login-password --region $REGION \
                       | docker login --username AWS --password-stdin $REGISTRY
