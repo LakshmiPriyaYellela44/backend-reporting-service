@@ -8,7 +8,6 @@ pipeline {
         REGISTRY = '123456789012.dkr.ecr.ap-south-1.amazonaws.com'
         REPO = 'reporting-backend'
         TAG = "${BRANCH_NAME}-${BUILD_NUMBER}-${GIT_COMMIT.take(7)}"
-        SLACK_WEBHOOK = credentials('slack-webhook')
     }
 
     tools {
