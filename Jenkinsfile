@@ -46,17 +46,18 @@ pipeline {
                     string(credentialsId: 'aws-access-key', variable: 'AWS_ACCESS_KEY_ID'),
                     string(credentialsId: 'aws-secret-key', variable: 'AWS_SECRET_ACCESS_KEY')
                 ]) {
-                    sh '''
-                      docker --version
-                      aws --version
+                    sh '''#!/bin/sh
+set -e
 
-                      aws ecr get-login-password --region $REGION \
+docker --version
+aws --version
 
-                      | docker login --username AWS --password-stdin $REGISTRY
+aws ecr get-login-password --region "$REGION" | \
+docker login --username AWS --password-stdin "$REGISTRY"
 
-                      docker build -t $IMAGE .
-                      docker push $IMAGE
-                    '''
+docker build -t "$IMAGE" .
+docker push "$IMAGE"
+'''
                 }
             }
         }
