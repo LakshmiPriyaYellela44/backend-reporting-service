@@ -36,11 +36,11 @@ pipeline {
             }
         }
 
-        stage('Docker Build & Push') {
+        /* ---------- NEW STAGE 1 ---------- */
+        stage('AWS ECR Login') {
             when {
                 branch 'dev'
             }
-
             steps {
                 withCredentials([
                     string(credentialsId: 'aws-access-key', variable: 'AWS_ACCESS_KEY_ID'),
@@ -48,17 +48,37 @@ pipeline {
                 ]) {
                     sh '''#!/bin/sh
 set -e
-
-docker --version
 aws --version
-
-aws ecr get-login-password --region "$REGION" | \
-docker login --username AWS --password-stdin "$REGISTRY"
-
-docker build -t "$IMAGE" .
-docker push "$IMAGE"
+aws ecr get-login-password --region "$REGION" \
+| docker login --username AWS --password-stdin "$REGISTRY"
 '''
                 }
+            }
+        }
+
+        /* ---------- NEW STAGE 2 ---------- */
+        stage('Docker Build Image') {
+            when {
+                branch 'dev'
+            }
+            steps {
+                sh '''#!/bin/sh
+set -e
+docker build -t "$IMAGE" .
+'''
+            }
+        }
+
+        /* ---------- EXISTING PUSH STAGE ---------- */
+        stage('Docker Push Image') {
+            when {
+                branch 'dev'
+            }
+            steps {
+                sh '''#!/bin/sh
+set -e
+docker push "$IMAGE"
+'''
             }
         }
     }
