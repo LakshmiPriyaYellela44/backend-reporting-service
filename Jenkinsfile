@@ -36,7 +36,7 @@ pipeline {
             }
         }
 
-        /* ---------- NEW STAGE 1 ---------- */
+        
         stage('AWS ECR Login') {
             when {
                 branch 'dev'
@@ -56,7 +56,7 @@ aws ecr get-login-password --region "$REGION" \
             }
         }
 
-        /* ---------- NEW STAGE 2 ---------- */
+        
         stage('Docker Build Image') {
             when {
                 branch 'dev'
@@ -69,7 +69,7 @@ docker build -t "$IMAGE" .
             }
         }
 
-        /* ---------- EXISTING PUSH STAGE ---------- */
+        
         stage('Docker Push Image') {
             when {
                 branch 'dev'
