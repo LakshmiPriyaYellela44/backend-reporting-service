@@ -5,7 +5,7 @@ pipeline {
 
     environment {
         REGION   = 'ap-south-1'
-        REGISTRY = '123456789012.dkr.ecr.ap-south-1.amazonaws.com'
+        REGISTRY = '722396409432.dkr.ecr.ap-south-1.amazonaws.com/reporting-backend'
         REPO     = 'reporting-backend'
         TAG      = "${BRANCH_NAME}-${BUILD_NUMBER}-${GIT_COMMIT.take(7)}"
         IMAGE    = "${REGISTRY}/${REPO}:${TAG}"
